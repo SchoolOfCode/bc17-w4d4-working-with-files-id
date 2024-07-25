@@ -6,7 +6,7 @@ const fileName = "quotes.json";
 export async function getQuotes() {
     try {
         const data = await fs.readFile(fileName, 'utf-8')
-        return data
+        return JSON.parse(data)
     } catch (error) {
         return "Error"
     }
@@ -18,16 +18,16 @@ const result2 = await addQuote(quoteText);
 console.log(await getQuotes())
 
 export async function addQuote(quoteText) {
-    const randId = uuidv4()
     const quoteObject = {
-        "textId" : randId,
-        "text" :  quoteText
+        id : uuidv4(),
+        quoteText:  quoteText
      }
-    const data = await getQuotes()
-    const quotes = JSON.parse(data);
+    const quotes = await getQuotes()
+    // const quotes = JSON.parse(data);
     quotes.push(quoteObject)
-    const quotesString = JSON.stringify(quotes)
-    const promise = await fs.writeFile("quotes.json", quotesString);
+    const quotesString = JSON.stringify(quotes, null, 2)
+    await fs.writeFile(fileName, quotesString);
+    return quoteObject
 }
 
 export async function getRandomQuote() {
