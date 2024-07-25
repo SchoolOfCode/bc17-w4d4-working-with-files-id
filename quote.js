@@ -15,7 +15,6 @@ export async function getQuotes() {
 const quoteText = "This is some random quote test";
 const result = await addQuote(quoteText);
 const result2 = await addQuote(quoteText);
-console.log(await getQuotes())
 
 export async function addQuote(quoteText) {
     const quoteObject = {
@@ -23,7 +22,6 @@ export async function addQuote(quoteText) {
         quoteText:  quoteText
      }
     const quotes = await getQuotes()
-    // const quotes = JSON.parse(data);
     quotes.push(quoteObject)
     const quotesString = JSON.stringify(quotes, null, 2)
     await fs.writeFile(fileName, quotesString);
@@ -31,12 +29,29 @@ export async function addQuote(quoteText) {
 }
 
 export async function getRandomQuote() {
-
+    const quotes = await getQuotes()
+    const range = quotes.length
+    const quotesRange = Math.floor(Math.random() * range)
+    return quotes[quotesRange]
 }
 
 export async function editQuote(id, quoteText) {
-
+    const quotesString = await getQuotes()
+    // const quotesString = JSON.stringify(quotes)
+    const quoteIndex = quotesString.findIndex((item) => item.id === id)
+    if (quoteIndex === -1) {
+        return null
+    }
+    quotesString[quoteIndex] = { 
+        id: id,
+        quoteText: quoteText 
+    }
+    const quotes = JSON.stringify(quotesString)
+    await fs.writeFile(fileName, quotes)
+    return quotesString[quoteIndex]
 }
+
+editQuote("1", "New Quote")
 
 export async function deleteQuote(id) {
 
